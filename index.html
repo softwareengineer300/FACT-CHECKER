@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fact Check &middot; AI Fact Verification</title>
+<meta name="description" content="Paste or upload a news article and get a grounded, source-backed verdict: True, Partially Fake, or Fake." />
+<link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+
+<!-- ============================ HEADER ============================ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22">
+          <path d="M12 3.2l6.4 2.3v5.4c0 4.1-2.7 7.8-6.4 8.9-3.7-1.1-6.4-4.8-6.4-8.9V5.5z"
+                fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+          <path d="M9.2 11.9l1.9 1.9 3.7-4"
+                fill="none" stroke="currentColor" stroke-width="1.9"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="brand-name">FACT <mark>CHECK</mark></span>
+      <span class="brand-tag">AI Fact Verification</span>
+    </div>
+    <div class="topbar-status" id="statusChip" title="Backend status">
+      <span class="dot" id="statusDot"></span>
+      <span id="statusText">Connecting&hellip;</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============================= MAIN ============================= -->
+<main class="page">
+
+  <h1 class="headline">Paste or upload the news article which needs to be checked</h1>
+  <p class="subcopy">
+    Check if news is <strong class="t-true">True</strong>,
+    <strong class="t-partial">Partially Fake</strong>, or
+    <strong class="t-false">Fake</strong>. Get a clear verdict, full source
+    URLs, and the verified truth.
+  </p>
+
+  <div class="samples">
+    <span class="samples-label">Quick Samples:</span>
+    <button type="button" class="sample-pill" data-sample="real">
+      <span class="pill-dot dot-green"></span> Real Science News
+    </button>
+    <button type="button" class="sample-pill" data-sample="partial">
+      <span class="pill-dot dot-amber"></span> Partially Fake News
+    </button>
+    <button type="button" class="sample-pill" data-sample="fake">
+      <span class="pill-dot dot-red"></span> Fake Viral News
+    </button>
+  </div>
+
+  <section class="card" aria-label="Fact check input">
+    <div class="panels">
+
+<!-- ------------------ LEFT: IMAGE DROP ZONE ------------------ -->
+      <div class="panel">
+        <div class="panel-head">
+          <span class="panel-title">
+            <svg class="ico" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+              <rect x="3" y="4.5" width="18" height="15" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/>
+              <circle cx="8.5" cy="10" r="1.6" fill="currentColor"/>
+              <path d="M4.5 17.5l4.6-4.2 3.3 3 2.6-2.3 4.5 4" fill="none" stroke="currentColor"
+                    stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            DROP IMAGE SCREENSHOT
+          </span>
+          <span class="panel-meta">Optional</span>
+        </div>
+
+        <div class="dropzone" id="dropzone" tabindex="0" role="button"
+             aria-label="Drag and drop an image screenshot here, or browse for a file">
+          <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" hidden />
+
+          <div class="dz-empty" id="dzEmpty">
+            <span class="dz-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24">
+                <path d="M12 15.5V5.2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+                <path d="M8.2 9L12 5.2 15.8 9" fill="none" stroke="currentColor"
+                      stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M5 15.6v2.3c0 .9.7 1.6 1.6 1.6h10.8c.9 0 1.6-.7 1.6-1.6v-2.3"
+                      fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <p class="dz-line">Drag &amp; drop screenshot here, or
+              <button type="button" class="linklike" id="browseBtn">browse</button>
+            </p>
+            <p class="dz-hint">Supports PNG, JPG, WebP</p>
+            <p class="dz-hint">Or press <kbd>Ctrl</kbd> + <kbd>V</kbd> to paste</p>
+          </div>
+
+          <div class="dz-preview" id="dzPreview" hidden>
+            <img id="dzThumb" alt="Selected screenshot preview" />
+            <div class="dz-file">
+              <span id="dzName">&nbsp;</span>
+              <span class="dz-size" id="dzSize"></span>
+            </div>
+            <button type="button" class="dz-remove" id="dzRemove"
+                    aria-label="Remove selected image">&times;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ------------------ RIGHT: ARTICLE TEXT ------------------ -->
+      <div class="panel">
+        <div class="panel-head">
+          <span class="panel-title">
+            <svg class="ico" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+              <path d="M7 3.5h7l4 4v13H7z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+              <path d="M14 3.5v4h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+              <path d="M9.6 12.5h5M9.6 15.6h5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            </svg>
+            PASTE NEWS ARTICLE TEXT
+          </span>
+          <span class="panel-meta">
+            <span id="wordCount">0 words</span>
+            <span class="sep">&bull;</span>
+            <button type="button" class="linklike" id="pasteBtn">Paste</button>
+            <span class="sep">&bull;</span>
+            <button type="button" class="linklike" id="clearBtn">Clear</button>
+          </span>
+        </div>
+        <textarea id="articleText" class="article-input" spellcheck="true"
+          placeholder="Paste news headline, article paragraphs, social media post, or claim here..."></textarea>
+      </div>
+    </div>
+
+    <button type="button" class="cta" id="checkBtn">
+      <span class="cta-spinner" id="ctaSpinner" hidden aria-hidden="true"></span>
+      <span id="ctaLabel">Check if News is Legit or Fake</span>
+    </button>
+    <p class="cta-note" id="ctaNote" hidden></p>
+  </section>
+
+  <!-- ---------------------------- RESULTS ---------------------------- -->
+  <section class="results" id="results" hidden aria-live="polite"></section>
+
+  <footer class="foot">
+    Verdicts are generated by AI with live web search. Always open the
+    cited sources before acting on a verdict.
+    <a href="/docs" target="_blank" rel="noopener">API docs</a> &middot;
+    <a href="/health" target="_blank" rel="noopener">Health</a>
+  </footer>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
